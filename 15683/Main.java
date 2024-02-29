@@ -37,7 +37,7 @@ public class Main {
         int[][] copyMap = new int[N][M];
 
         for (int i = 0; i < rotate[type]; ++i) { // 몇번을 rotate
-            for (int j = 0; j < N; ++j) {
+            for (int j = 0; j < N; ++j) { // 백업
                 copyMap[j] = map[j].clone();
             }
 
@@ -66,7 +66,7 @@ public class Main {
 
             dfs(index+1);
 
-            for (int j = 0; j < N; ++j) {
+            for (int j = 0; j < N; ++j) { // 복구
                 map[j] = copyMap[j].clone();
             }
         }
