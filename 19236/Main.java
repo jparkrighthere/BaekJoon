@@ -1,12 +1,12 @@
 import java.util.*;
 import java.io.*;
 
-public class Main { //패스 못함 미완성
+public class Main {
     static int[] dy = {-1, -1, 0, 1, 1, 1, 0, -1};
     static int[] dx = {0, -1, -1, -1, 0, 1, 1, 1};
-    static int ret;
+    static int max = Integer.MIN_VALUE;
 
-    static class Fish {
+    public static class Fish {
         int y, x, dir;
         boolean isAlive;
 
@@ -18,87 +18,79 @@ public class Main { //패스 못함 미완성
         }
     }
 
-    static void dfs(int[][] map, Fish[] fish, int shark_y, int shark_x, int sum) {
-
+    static void dfs(int[][] map, Fish[] fish, int sharkY, int sharkX, int sharkDir, int sum) {
         int[][] copyMap = new int[4][4];
         Fish[] copyFish = new Fish[16];
-        
 
-        for (int j = 0; j < 4; j++) {
-            for (int k = 0; k < 4; k++) {
-                copyMap[j][k] = map[j][k];
-            }
+        for (int i = 0; i < 4; i++) {
+            copyMap[i] = map[i].clone();
         }
+        copyFish = fish.clone();
 
-        for (int j = 0; j < 16; j++) {
-            copyFish[j] = fish[j];
-        }
-
-        // eat
-        int eat = copyMap[shark_y][shark_x];
-        int shark_dir = copyFish[eat].dir;
+        // shark eats
+        int eat = copyMap[sharkY][sharkX];
         copyFish[eat].isAlive = false;
-        copyMap[shark_y][shark_x] = -1; // 물고기 없음
+        sharkDir = copyFish[eat].dir;
+        copyMap[sharkY][sharkX] = -1; // no fish
 
-        sum += eat;
-        if (ret < sum) {
-            ret = sum;
-        }
+        sum += (eat + 1);
 
-
-        //Fish move
+        // fish moves
         for (int i = 0; i < 16; i++) {
-            if (!copyFish[i].isAlive) continue;
+            Fish currentFish = copyFish[i];
+            if (currentFish.isAlive) {
+                int cy = currentFish.y;
+                int cx = currentFish.x;
+                int cd = currentFish.dir;
 
-            int cy = copyFish[i].y;
-            int cx = copyFish[i].x;
-            int cd = copyFish[i].dir;
+                int ny = cy + dy[cd];
+                int nx = cx + dx[cd];
+                int nd = cd;
 
-            int ny = cy + dy[cd];
-            int nx = cx + dx[cd];
-            int nd = cd;
+                while (ny < 0 || ny >= 4 || nx < 0 || nx >= 4 || (ny == sharkY && nx == sharkX)) {
+                    nd = (nd + 1) % 8;
+                    ny = cy + dy[nd];
+                    nx = cx + dx[nd];
+                }
 
-            while (ny < 0 || ny >= 4 || nx < 0 || nx >= 4 || (ny == shark_y && nx == shark_x)) {
-                nd = (nd + 1) % 8;
-                ny = cy + dy[nd];
-                nx = cx + dx[nd];
+                if (copyMap[ny][nx] != -1) {
+                    int next = copyMap[ny][nx];
+                    Fish changeFish = copyFish[next];
+                    changeFish.y = cy;
+                    changeFish.x = cx;
+                    copyMap[cy][cx] = next;
+
+                    currentFish.y = ny;
+                    currentFish.x = nx;
+                    currentFish.dir = nd;
+                    copyMap[ny][nx] = i;
+                }
+
+                else {
+                    currentFish.y = ny;
+                    currentFish.x = nx;
+                    currentFish.dir = nd;
+                    copyMap[ny][nx] = i;
+                    copyMap[cy][cx] = -1;
+                }
             }
+        }
 
-            if (copyMap[ny][nx] != -1) {
-                int next = copyMap[ny][nx];
-                copyFish[next].y = cy;
-                copyFish[next].x = cx;
-                copyFish[i].y = ny;
-                copyFish[i].x = nx;
-                copyFish[i].dir = nd;
+        // shark moves
+        for (int i = 1; i <= 3; i++) {
+            int ny = sharkY + dy[sharkDir] * i;
+            int nx = sharkX + dx[sharkDir] * i;
 
-                copyMap[ny][nx] = i;
-                copyMap[cy][cx] = next;
-            }
-            else{
-                copyFish[i].y = ny;
-                copyFish[i].x = nx;
-                copyFish[i].dir = nd;
-
-                copyMap[ny][nx] = i;
-                copyMap[cy][cx] = -1;
+            if (ny >= 0 && ny < 4 && nx >= 0 && nx < 4 && copyMap[ny][nx] != -1) {
+                dfs(copyMap, copyFish, ny, nx, sharkDir, sum);
             }
         }
 
-        // Shark move
-        for (int i = 1; i < 4; i++) {
-            int ny = shark_y + dy[shark_dir] * i;
-            int nx = shark_x + dx[shark_dir] * i;
-
-            if (ny < 0 || ny >= 4 || nx < 0 || nx >= 4) break;
-            if (copyMap[ny][nx] != -1) {
-                dfs(copyMap, copyFish, ny, nx, sum);
-            }
-        }
+        max = Math.max(max, sum);
+        return;
     }
 
-
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
@@ -114,9 +106,8 @@ public class Main { //패스 못함 미완성
                 map[i][j] = a;
             }
         }
+        dfs(map, fish, 0, 0, 0, 0);
 
-        dfs(map, fish, 0, 0, 0);
-
-        System.out.println(ret);
+        System.out.println(max);
     }
 }
