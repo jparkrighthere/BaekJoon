@@ -8,10 +8,11 @@ public class Main {
     static boolean[][] visited;
     static int[] dy = {-1, 1, 0, 0};
     static int[] dx = {0, 0, -1, 1};
+    static List<int[]> list;
 
-    static void dfs(int y, int x, int depth) {
-        if (depth == 4) {
-            MAX = Math.max(MAX, findMax());
+    static void dfs(int y, int x, int depth, int sum, List<int[]> store) {
+        if (depth == 3) {
+            combi(sum, store);
             return;
         }
 
@@ -21,43 +22,30 @@ public class Main {
 
             if (ny >= 0 && ny < N && nx >= 0 && nx < M && !visited[ny][nx]) {
                 visited[ny][nx] = true;
-                dfs(ny, nx, depth + 1);
+                store.add(new int[]{ny, nx});
+                dfs(ny, nx, depth + 1, sum + map[ny][nx], store);
                 visited[ny][nx] = false;
+                store.remove(store.size() - 1);
             }
         }
     }
 
-    static int findMax() {
-        int ret = 0;
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < M; j++) {
-                if (visited[i][j] == true) {
-                    ret += map[i][j];
-                    // System.out.print(i + " " + j + " " + map[i][j]);
+    static void combi(int sum, List<int[]> store) {
+        for (int i = 0; i < store.size(); i++) {
+            int cy = store.get(i)[0];
+            int cx = store.get(i)[1];
+            for (int j = 0; j < 4; j++) {
+                int ny = cy + dy[j];
+                int nx = cx + dx[j];
+                if (ny >= 0 && ny < N && nx >= 0 && nx < M && !visited[ny][nx]) {
+                    int tempSum = sum + map[ny][nx];
+                    MAX = Math.max(MAX, tempSum);
                 }
-                // System.out.println();
-            }
-        }
-
-        return ret;
-    }
-
-    static void combi(int y, int x, int depth, int z, int sum) {
-        if (depth == 3) {
-            MAX = Math.max(MAX, sum);
-            return;
-        }
-
-        for (int i = z; i < 4; i++) {
-            int ny = y + dy[z];
-            int nx = x + dx[z];
-            if (ny >= 0 && ny < N && nx >= 0 && nx < M) {
-                combi(y,x, depth + 1, i + 1, sum + map[ny][nx]);
             }
         }
     }
- 
-     public static void main(String[] args) throws Exception {
+
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
         N = Integer.parseInt(st.nextToken());
@@ -71,17 +59,20 @@ public class Main {
                 map[i][j] = Integer.parseInt(st.nextToken());
             }
         }
+        list = new ArrayList<>();
+
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < M; j++) {
-                visited[i][j] = true;
-                dfs(i,j,1);
-                visited[i][j] = false;
-                combi(i,j,0,0,map[i][j]);
+                if (!visited[i][j]) {
+                    visited[i][j] = true;
+                    List<int[]> store = new ArrayList<>();
+                    store.add(new int[]{i, j});
+                    dfs(i, j, 1, map[i][j], store);
+                    visited[i][j] = false;
+                }
             }
         }
-        
 
         System.out.println(MAX);
-        br.close();
-    }  
+    }
 }
