@@ -1,39 +1,43 @@
-import java.io.*;
-import java.util.*;
+        import java.io.*;
+        import java.util.*;
 
-public class Main {
-    static int N, M;
-    static int[] arr;
-    static StringBuilder sb = new StringBuilder();
+        public class Main {
+            static int N;
+            static int[] arr;
+            static boolean[] visited;
+            public static void main(String[] args) throws IOException {
+                BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+                N = Integer.parseInt(br.readLine());
+                arr = new int[N];
 
-    static void backtrack(int at, int depth, int[] temp) {
-        if (depth == M) {
-            for (int i : temp) {
-                sb.append(i).append(" ");
+                StringTokenizer st = new StringTokenizer(br.readLine());
+                for (int i = 0; i < N; i++) {
+                    arr[i] = Integer.parseInt(st.nextToken());
+                }
+
+                int[] dp = new int[N];
+                visited = new boolean[1001];
+
+                for (int i = 0; i < N; i++) {
+                    dp[i] = 1;
+                }
+
+                for (int i = 0; i < N; i++) {
+                    for (int j = 0; j < i; j++) {
+                        if (arr[i] > arr[j] && dp[j] + 1 > dp[i]) {
+                            dp[i] = dp[j] + 1;
+                        }
+                    }
+                }
+
+                int ans = 0;
+                for (int i = 0; i < N; i++) {
+                    if (dp[i] > ans) {
+                        ans = dp[i];
+                    }
+                }
+
+                System.out.println(ans);
+                
             }
-            sb.append("\n");
-            return;
         }
-
-        for (int i = at; i < N; i++) {
-            temp[at] = arr[i];
-            backtrack(i + 1, depth + 1, temp);
-        }
-    }
-
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
-        M = Integer.parseInt(st.nextToken());
-        arr = new int[N];
-
-        st = new StringTokenizer(br.readLine());
-
-        for (int i = 0; i < N; i++) {
-            arr[i] = Integer.parseInt(st.nextToken());
-        }
-        backtrack(0, 0, new int[M]);
-        System.out.println(sb.toString());
-    }
-}
