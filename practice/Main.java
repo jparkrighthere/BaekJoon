@@ -1,43 +1,61 @@
-        import java.io.*;
-        import java.util.*;
+import java.io.*;
+import java.util.*;
 
-        public class Main {
-            static int N;
-            static int[] arr;
-            static boolean[] visited;
-            public static void main(String[] args) throws IOException {
-                BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-                N = Integer.parseInt(br.readLine());
-                arr = new int[N];
+public class Main {
+    static int N;
+    static int[] arr;
 
-                StringTokenizer st = new StringTokenizer(br.readLine());
-                for (int i = 0; i < N; i++) {
-                    arr[i] = Integer.parseInt(st.nextToken());
-                }
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-                int[] dp = new int[N];
-                visited = new boolean[1001];
+        N = Integer.parseInt(br.readLine());
+        arr = new int[N];
 
-                for (int i = 0; i < N; i++) {
-                    dp[i] = 1;
-                }
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        for (int i = 0; i < N; i++) {
+            arr[i] = Integer.parseInt(st.nextToken());
+        }
+        Arrays.sort(arr);
 
-                for (int i = 0; i < N; i++) {
-                    for (int j = 0; j < i; j++) {
-                        if (arr[i] > arr[j] && dp[j] + 1 > dp[i]) {
-                            dp[i] = dp[j] + 1;
-                        }
+        long count = 0;
+        for(int i = 0; i < N; i++) {
+            int num = arr[i];
+            int low = i + 1;
+            int high = arr.length - 1;
+
+            while (low < high) {
+                int sum = num + arr[low] + arr[high];
+
+                if (sum == 0) {
+                    int left = 1;
+                    int right = 1;
+                    if (arr[low] == arr[high]) {
+                        int n = high - low + 1;
+                        count += n * (n - 1) / 2;
+                        break;
                     }
-                }
 
-                int ans = 0;
-                for (int i = 0; i < N; i++) {
-                    if (dp[i] > ans) {
-                        ans = dp[i];
+                    while (arr[low] == arr[low + 1]) {
+                        left++;
+                        low++;
                     }
+
+                    while (arr[high] == arr[high - 1]) {
+                        right++;
+                        high--;
+                    }
+                    count += left * right;
                 }
 
-                System.out.println(ans);
-                
+                if (sum > 0) {
+                    high--;
+                }
+                else {
+                    low++;
+                }
             }
         }
+
+        System.out.println(count);
+    }
+}
