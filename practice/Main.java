@@ -1,61 +1,21 @@
-import java.io.*;
 import java.util.*;
+import java.io.*;
 
 public class Main {
-    static int N;
-    static int[] arr;
-
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-        N = Integer.parseInt(br.readLine());
-        arr = new int[N];
-
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        for (int i = 0; i < N; i++) {
-            arr[i] = Integer.parseInt(st.nextToken());
-        }
-        Arrays.sort(arr);
-
-        long count = 0;
-        for(int i = 0; i < N; i++) {
-            int num = arr[i];
-            int low = i + 1;
-            int high = arr.length - 1;
-
-            while (low < high) {
-                int sum = num + arr[low] + arr[high];
-
-                if (sum == 0) {
-                    int left = 1;
-                    int right = 1;
-                    if (arr[low] == arr[high]) {
-                        int n = high - low + 1;
-                        count += n * (n - 1) / 2;
-                        break;
-                    }
-
-                    while (arr[low] == arr[low + 1]) {
-                        left++;
-                        low++;
-                    }
-
-                    while (arr[high] == arr[high - 1]) {
-                        right++;
-                        high--;
-                    }
-                    count += left * right;
-                }
-
-                if (sum > 0) {
-                    high--;
-                }
-                else {
-                    low++;
-                }
+        int N = Integer.parseInt(br.readLine());
+        int[] dp = new int[N + 1];
+        for (int i = 2; i <= N; i++) {
+            dp[i] = dp[i - 1] + 1;
+            if (i % 2 == 0) {
+                dp[i] = Math.min(dp[i], dp[i / 2] + 1);
+            }
+            if (i % 3 == 0) {
+                dp[i] = Math.min(dp[i], dp[i / 3] + 1);
             }
         }
-
-        System.out.println(count);
+        System.out.println(dp[N]);
     }
+
 }
