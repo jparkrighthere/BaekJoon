@@ -1,13 +1,11 @@
-import java.io.*;
 import java.util.*;
+import java.io.*;
 
 public class Main {
-    static int N, M, r, c, count;
-    static int d;
-    static int[] dx = {0, 1, 0, -1};
-    static int[] dy = {-1, 0, 1, 0};
+    static int N, M, robotY, robotX, d;
     static int[][] map;
-  
+    static int[] dy = {-1, 0, 1, 0};
+    static int[] dx = {0, 1, 0, -1};
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
@@ -16,47 +14,57 @@ public class Main {
         map = new int[N][M];
         
         st = new StringTokenizer(br.readLine());
-        r = Integer.parseInt(st.nextToken());
-        c = Integer.parseInt(st.nextToken());
+        robotY = Integer.parseInt(st.nextToken());
+        robotX = Integer.parseInt(st.nextToken());
         d = Integer.parseInt(st.nextToken());
-        
-        for(int i=0; i<N; i++) {
+
+        for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
-            for(int j=0; j<M; j++) {
+            for (int j = 0; j < M; j++) {
                 map[i][j] = Integer.parseInt(st.nextToken());
             }
         }
-        count = 1;
-        solve(r, c, d);
-        System.out.println(count);
 
-        br.close(); 
-    }
-
-
-    static void solve(int y, int x, int dir) {
-        map[y][x] = -1;
-    
-        for (int i = 0; i < 4; i++) {
-            dir = (dir + 3) % 4;
-    
-            int ny = y + dy[dir];
-            int nx = x + dx[dir];
-    
-            if (ny >= 0 && nx >= 0 && ny < N && nx < M && map[ny][nx] == 0) {
+        int count = 0;
+        // robot move
+        while (true) {
+            // 현재 칸이 아직 청소되지 않은 경우, 현재 칸을 청소한다.
+            if (map[robotY][robotX] == 0) {
+                map[robotY][robotX] = 2;
                 count++;
-                solve(ny, nx, dir);
-                
-                return;
-            }   
+            }
+
+            boolean flag = false;
+            for (int i = 0; i < 4; i++) {
+                d = (d + 4 - 1) % 4;
+
+                int ny = robotY + dy[d];
+                int nx = robotX + dx[d];
+
+                // 현재 칸의 주변 4칸 중 청소되지 않은 빈 칸이 있는 경우
+                if (ny >= 0 && ny < N && nx >= 0 && nx < M && map[ny][nx] == 0) {
+                    robotY = ny;
+                    robotX = nx;
+                    flag = true;
+                    break;
+                }
+            }
+
+            // 현재 칸의 주변 4칸 중 청소되지 않은 빈 칸이 없는 경우
+            if (!flag) {
+                int ny = robotY - dy[d];
+                int nx = robotX - dx[d];
+                if (ny >= 0 && ny < N && nx >= 0 && nx < M && map[ny][nx] != 1) {
+                    robotY = ny;
+                    robotX = nx;
+                    continue;
+                }
+                else {
+                    break;
+                }
+            }
         }
-    
-        int back = (dir + 2) % 4;
-        int by = y + dy[back];
-        int bx= x + dx[back];
-    
-        if (by >= 0 && by < N && bx >=0 && bx < M && map[by][bx] != 1) {
-            solve(by, bx, dir);
-        }
+
+        System.out.println(count);
     }
 }
