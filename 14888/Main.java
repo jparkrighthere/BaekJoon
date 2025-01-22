@@ -2,56 +2,60 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
-    static int[] oper; // +, -, *, /
-    static int[] num;
-    static int count;
-    static int min = Integer.MAX_VALUE;
+    static int N;
+    static int[] arr;
+    static int plus, minus, mult, div;
     static int max = Integer.MIN_VALUE;
+    static int min = Integer.MAX_VALUE;
 
-    static void dfs(int val, int idx) {
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        N = Integer.parseInt(br.readLine());
+        arr = new int[N];
 
-        if (idx == count) {
-            max = Math.max(max, val);
-            min = Math.min(min, val);
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        for (int i = 0; i < N; i++) {
+            arr[i] = Integer.parseInt(st.nextToken());
+        }
+
+        st = new StringTokenizer(br.readLine());
+        plus = Integer.parseInt(st.nextToken());
+        minus = Integer.parseInt(st.nextToken());
+        mult = Integer.parseInt(st.nextToken());
+        div = Integer.parseInt(st.nextToken());
+
+        backtrack(arr[0], 1);
+
+        System.out.println(max);
+        System.out.println(min);
+    }
+
+    static void backtrack(int result, int idx) {
+        if (idx == N) {
+            max = Math.max(max, result);
+            min = Math.min(min, result);
             return;
         }
 
-        for (int i = 0; i < 4; ++i) {
-            if (oper[i] > 0) {
-                oper[i]--;
-
-                if (i == 0) dfs(val + num[idx], idx + 1);
-
-                if (i == 1) dfs(val - num[idx], idx + 1);
-
-                if (i == 2) dfs(val * num[idx], idx + 1);
-                
-                if (i == 3) dfs(val / num[idx], idx + 1);
-
-                oper[i]++;
-            }
+        if (plus > 0) {
+            plus--;
+            backtrack(result + arr[idx], idx + 1);
+            plus++;
         }
-    }
-
-    public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        oper = new int[4];
-        count = Integer.parseInt(st.nextToken());
-        num = new int[count];
-
-        st = new StringTokenizer(br.readLine());
-        for (int i = 0; i < count; ++i) {
-            num[i] = Integer.parseInt(st.nextToken());
+        if (minus > 0) {
+            minus--;
+            backtrack(result - arr[idx], idx + 1);
+            minus++;
         }
-        
-        st = new StringTokenizer(br.readLine());
-        for (int i = 0; i < 4; ++i) {
-            oper[i] = Integer.parseInt(st.nextToken());
+        if (mult > 0) {
+            mult--;
+            backtrack(result * arr[idx], idx + 1);
+            mult++;
         }
-
-        dfs(num[0], 1);
-        System.out.println(max);
-        System.out.println(min);
+        if (div > 0) {
+            div--;
+            backtrack(result / arr[idx], idx + 1);
+            div++;
+        }
     }
 }
