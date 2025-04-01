@@ -10,23 +10,26 @@ public class Main {
         String[] s = br.readLine().split(" ");
         c = Integer.parseInt(s[0]);
         n = Integer.parseInt(s[1]);
- 
-        dp= new int [c+101];
-        Arrays.fill(dp,987654321);
-        dp[0]=0;
- 
-        for(int i=0; i<n; i++){
-            String[] s1 = br.readLine().split(" ");
-            int cost = Integer.parseInt(s1[0]);
-            int people = Integer.parseInt(s1[1]);
-            for(int j=people; j<c+101; j++){
-                dp[j]=Math.min(dp[j],cost+dp[j-people]);
+
+        dp = new int[c + 101];
+        Arrays.fill(dp, 987654321);
+        dp[0] = 0;
+
+        for (int z = 0; z < n; z++) {
+            StringTokenizer st = new StringTokenizer(br.readLine());
+            int cost = Integer.parseInt(st.nextToken());
+            int people = Integer.parseInt(st.nextToken());
+
+            for (int i = people; i < c + 101; i++) {
+                dp[i] = Math.min(dp[i], dp[i - people] + cost);
             }
         }
-        int result=Integer.MAX_VALUE;
-        for(int i=c; i<c+101; i++){
-            result=Math.min(result,dp[i]);
+
+        int result = Integer.MAX_VALUE;
+        for (int i = c; i < c + 101; i++) {
+            result = Math.min(result, dp[i]);
         }
+
         System.out.println(result);
     }
 }
