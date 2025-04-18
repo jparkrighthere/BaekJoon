@@ -19,15 +19,13 @@ public class Main {
         dp[9] = 7;
         dp[10] = 9;
 
-        for (int j = 11; j < 101; j++) {
-            dp[j] = dp[j - 3] + dp[j - 2];
+        for (int i = 11; i <= 100; i++) {
+            dp[i] = dp[i - 1] + dp[i - 5];
         }
-
-        for (int i = 0; i < T; i++) {
+        
+        for (int t = 0; t < T; t++) {
             N = Integer.parseInt(br.readLine());
-            sb.append(dp[N]).append("\n");
+            System.out.println(dp[N]);
         }
-
-        System.out.println(sb.toString());
     }
 }
